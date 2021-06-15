@@ -8,8 +8,25 @@ public:
 private:
     sf::Texture texture_;
 };
+class AnimatedSprite:public sf::Sprite{
+    public:
+       AnimatedSprite(std::string texture_file_name){
+            texture_.loadFromFile(texture_file_name);
+            this->setTexture(texture_);
+        }
+            private:
+                sf::Texture texture_;
+};
 
-class Strzal:public sf::Sprite{
+class Heart:public AnimatedSprite{
+public:
+    Heart();
+    void move_heart(const sf::Time &elapsed);
+private:
+    float speed_y_=40;
+};
+
+class Strzal:public AnimatedSprite{
 public:
     ~Strzal(){};
     Strzal();
@@ -19,22 +36,29 @@ private:
     sf::Texture texture_;
 };
 
-class Hero:public sf::Sprite{
+class Hero:public AnimatedSprite{
 public:
     Hero(sf::RenderWindow &window, std::string file);
     void Animacja(const sf::Time elapsed);
     void setBounds(float left, float right, float top, float bottom);
     int get_hearts();
+    int get_points();
+    void add_points();
     void set_hearts(int hearts);
+    void draw_hero(sf::RenderWindow &window);
+    void usun_zycie();
+    void dodaj_zycie();
+    void jump();
 private:
     float speed_x=100;
     float left_border_, right_border_, top_border_, bottom_border_;
     sf::Texture texture_;
     int hearts_=3;
     int points=0;
+     std::vector<std::unique_ptr<Heart>> zycie;
 };
 
-class Chicken:public sf::Sprite{
+class Chicken:public AnimatedSprite{
 public:
     ~Chicken(){}
     Chicken();

@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include "klasy.h"
+#include <string>
 
 int main() {
     sf::RenderWindow window_menu(sf::VideoMode(800, 600), "Menu");
@@ -115,19 +116,44 @@ int main() {
                     window.setFramerateLimit(30);
                     Background background(menu.get_background(), window.getSize().x, window.getSize().y);
                     Hero hero1(window, menu.get_hero_name());
+                    Heart heart;
+                    float seconds=0;
+                    //float chicken_frequency=1.5;
+                    float chicken_seconds=0;
+                    char string[20];
+
                     std::vector<std::unique_ptr<Chicken>> shapes;
                     std::vector<std::unique_ptr<Strzal>> pociski;
-                    for(int i=0; i<100; i++){
-                        auto chicken=std::make_unique<Chicken>();
-                        shapes.emplace_back(std::move(chicken));
+                    std::vector<std::unique_ptr<Heart>> bonusy;
+                    for(int i=0; i<100;i++){
+
+                        //                        if(chicken_seconds>chicken_frequency){
+                        auto new_chicken=std::make_unique<Chicken>();
                         if(i==0){
-                            shapes[i]->setPosition(rand()%window.getSize().x, 15);
+                            new_chicken->setPosition(rand()%700, 0 );
                         }
-                        else if(i>0){
-                            shapes[i]->setPosition(rand()%window.getSize().x,shapes[i-1]->getPosition().y-60);
+                        if(i>1){
+                            new_chicken->setPosition(rand()%700, shapes[i-1]->getPosition().y-60);
+
                         }
+                        shapes.emplace_back(std::move(new_chicken));
+
+                        //chicken_seconds=0;
+                        //}
+
                     }
+                    sf::Text points;
+                    sf::Font font;
+                    font.loadFromFile("Comic Sans MS 400.ttf");
+                    points.setPosition(0,50);
+
+                    points.setFont(font);
+
+                    points.setCharacterSize(30);
+                    points.setColor(sf::Color::Red);
+
                     sf::Clock clock;
+                    sf::Clock timer;
                     while (window.isOpen()) {
                         sf::Event event;
                         while (window.pollEvent(event)) {
@@ -147,19 +173,53 @@ int main() {
                         }
                         window.clear(sf::Color::Black);
                         sf::Time elapsed=clock.restart();
+                        sf::Time time=timer.restart();
+                        seconds+=time.asSeconds();
+                        chicken_seconds+=time.asSeconds();
+                        itoa(hero1.get_points(), string, 10 );
+                        points.setString(string);
+
+
+
+                        if(seconds>5){
+                            auto zycie=std::make_unique<Heart>();
+                            zycie->setPosition(rand()%window.getSize().x,-50);
+                            bonusy.emplace_back(std::move(zycie));
+                            seconds=0;
+
+                        }
+
                         window.draw(background);
                         hero1.Animacja(elapsed);
+
 
                         for(auto it=shapes.begin(); it!=shapes.end();++it){
                             for(auto it_p=pociski.begin(); it_p!=pociski.end();++it_p){
                                 if(it_p->get()->getGlobalBounds().intersects((it->get()->getGlobalBounds())))
                                 {
+                                    hero1.add_points();
                                     shapes.erase(it);
                                     pociski.erase(it_p--);
+
+
                                 }
+
                             }
                         }
-                        window.draw(hero1);
+                        for(auto it=bonusy.begin(); it!=bonusy.end();++it){
+
+                            if(it->get()->getGlobalBounds().intersects(hero1.getGlobalBounds())){
+                                bonusy.erase(it);
+                                hero1.dodaj_zycie();
+                                break;
+                            }
+
+
+                        }
+
+
+
+                        hero1.draw_hero(window);
                         for(const auto &s : shapes) {
                             window.draw(*s);
                         }
@@ -174,32 +234,61 @@ int main() {
                             s->animation_chicken(elapsed);
                         }
 
-                        for( auto &s : shapes) {
-                            if(s->getGlobalBounds().top+s->getGlobalBounds().height>=window.getSize().y){
-                                sf::RenderWindow komunikat(sf::VideoMode(800, 600),"PRZEGRALES");
-                                sf::Text message;
-                                sf::Font font;
-                                font.loadFromFile("Comic Sans MS 400.ttf");
+                        for( auto &s : bonusy) {
+                            s->move_heart(elapsed);
+                        }
 
-                                message.setFont(font);
-                                message.setString("PRZEGRALES");
-                                message.setCharacterSize(30);
-                                message.setColor(sf::Color::Red);
-                                while (komunikat.isOpen()) {
-                                    sf::Event event;
-                                    while (komunikat.pollEvent(event)) {
-                                        if(event.type==sf::Event::KeyPressed)
-                                        {
-                                            komunikat.close();
+                        for( const auto &s : bonusy) {
+                            window.draw(*s);
+                        }
+                        window.draw(points);
+                        for(auto it=pociski.begin(); it!=pociski.end();++it){
+                            if( it->get()->getGlobalBounds().top<0)
+                            {
+                                pociski.erase(it);
+                                break;
+                            }
+
+                        }
+
+
+                        for(auto it=shapes.begin(); it!=shapes.end();++it){
+                            if(it->get()->getGlobalBounds().top+it->get()->getGlobalBounds().height>=window.getSize().y){
+                                hero1.usun_zycie();
+                                shapes.erase(it);
+                                if(hero1.get_hearts()==0){
+                                    sf::RenderWindow komunikat(sf::VideoMode(800, 600),"PRZEGRALES");
+                                    sf::Text message;
+                                    sf::Font font;
+                                    font.loadFromFile("Comic Sans MS 400.ttf");
+
+                                    message.setFont(font);
+                                    message.setString("PRZEGRALES");
+                                    message.setCharacterSize(30);
+                                    message.setColor(sf::Color::Red);
+                                    while (komunikat.isOpen()) {
+                                        sf::Event event;
+                                        while (komunikat.pollEvent(event)) {
+                                            if(event.type==sf::Event::Closed)
+                                            {
+                                                komunikat.close();
+                                                window.close();
+                                            }
+
+
                                         }
+                                        komunikat.clear(sf::Color::Black);
+                                        komunikat.draw(message);
+                                        komunikat.display();
 
 
                                     }
-                                    komunikat.clear(sf::Color::Black);
-                                    komunikat.draw(message);
-                                    komunikat.display();
                                 }
+                                break;
+
+
                             }
+
                         }
                         window.display();
                     }

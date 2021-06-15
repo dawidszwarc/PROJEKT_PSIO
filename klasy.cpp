@@ -7,9 +7,8 @@ Background::Background(std::string background, float x, float y){
     this->setTextureRect(sf::IntRect(0,0,x,y));
 }
 
-Strzal::Strzal(){
-    texture_.loadFromFile("fireshot.png");
-    this->setTexture(texture_);
+
+Strzal::Strzal():AnimatedSprite("fireshot.png"){
     this->setScale(0.03,0.05);
 }
 
@@ -19,13 +18,51 @@ void Strzal::Animacja(const sf::Time elapsed){
     this->move(0,-distance_y);
 }
 
-Hero::Hero(sf::RenderWindow &window, std::string file)
+Hero::Hero(sf::RenderWindow &window, std::string file):AnimatedSprite(file)
 {
-    texture_.loadFromFile(file);
-    this->setTexture(texture_);
     this->setScale(0.1, 0.1);
     this->setBounds(0, window.getSize().x, 0, window.getSize().y);
     this->setPosition((window.getSize().x/2.0)-((this->getGlobalBounds().width)/2.0),(window.getSize().y-this->getGlobalBounds().height));
+    for(int i=0; i<3; i++){
+        auto heart=std::make_unique<Heart>();
+        zycie.emplace_back(std::move(heart));
+        if(i==0){
+           zycie[i]->setPosition(0,0);
+        }
+        if(i>0){
+           zycie[i]->setPosition(zycie[i-1]->getPosition().x+zycie[i]->getGlobalBounds().width,0);
+        }
+
+    }
+
+
+}
+void Hero::usun_zycie(){
+    zycie.erase(zycie.end());
+    hearts_-=1;
+
+}
+
+void Hero::dodaj_zycie()
+{
+    auto heart=std::make_unique<Heart>();
+heart->setPosition(zycie[zycie.size()-1]->getPosition().x+heart->getGlobalBounds().width,0);
+    zycie.emplace_back(std::move(heart));
+    hearts_++;
+
+}
+
+void Hero::jump()
+{
+   move(0,10);
+   move(0,-10);
+}
+void Hero::draw_hero(sf::RenderWindow &window){
+    window.draw(*this);
+    for(const auto &s : zycie) {
+        window.draw(*s);
+    }
+
 }
 
 void Hero::Animacja(const sf::Time elapsed){
@@ -50,6 +87,10 @@ void Hero::setBounds(float left, float right, float top, float bottom)
 }
 
 int Hero::get_hearts(){return hearts_;}
+
+int Hero::get_points(){return points;}
+
+void Hero::add_points(){points+=10;}
 
 void Hero::set_hearts(int hearts){
     hearts_=hearts;
@@ -125,13 +166,23 @@ std::string Menu::get_hero_name(){
     return chosen_hero_name_;
 }
 
-Chicken::Chicken(){
+Chicken::Chicken():AnimatedSprite("chicken.png"){
     this->setScale(0.1,0.1);
-    texture_.loadFromFile("chicken.png");
-    this->setTexture(texture_);
 }
 
 void Chicken::animation_chicken(const sf::Time elapsed){
+    float time=elapsed.asSeconds();
+    float distance_y=time*speed_y_;
+    this->move(0,distance_y);
+}
+
+Heart::Heart():AnimatedSprite("heart.png"){
+    this->setScale(0.05,0.05);
+
+}
+
+void Heart::move_heart(const sf::Time &elapsed)
+{
     float time=elapsed.asSeconds();
     float distance_y=time*speed_y_;
     this->move(0,distance_y);
