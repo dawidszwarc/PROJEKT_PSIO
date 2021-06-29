@@ -1,3 +1,4 @@
+
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -34,42 +35,69 @@ int main() {
                 {
                     window_menu.close();
                 }
-                if(event.key.code==sf::Keyboard::Enter&& menu.GetPressedId()==1)
+                if(event.key.code==sf::Keyboard::Enter && menu.GetPressedId()==3)
                 {
-                    sf::RenderWindow jak_grac(sf::VideoMode(800, 600), "Zasady");
-                    Settings settings(jak_grac);
-                    //                    sf::Text text;
-                    //                    sf::Font font;
-                    //                    font.loadFromFile("Comic Sans MS 400.ttf");
-                    //                    text.setFont(font);
-                    //                    text.setColor(sf::Color::White);
-                    //                    text.setString("GRAJ");
-                    //                    text.setCharacterSize(15);
-                    //                    text.setString("Twoim zadaniem jest strzelanie do spadajacych kuczakow. Za trafienie do celu otrzymasz 10 punktow, jesli \n kurczak spadnie na ziemie, stracisz wtedy jedno z twoich trzech zyc. Do poruszania sie uzywaj strzalek \n lewo prawo, aby oddac strzal uzyj spacji.");
-                    //                    sf::Text text2;
+                    sf::RenderWindow zasady(sf::VideoMode(800, 600), "Zasady");
+                    sf::Text text;
+                    sf::Font font;
+                    font.loadFromFile("Comic Sans MS 400.ttf");
+                    text.setFont(font);
+                    text.setColor(sf::Color::White);
+                    text.setString("GRAJ");
+                    text.setCharacterSize(15);
+                    text.setString("Twoim zadaniem jest strzelanie do spadajacych kuczakow. Za trafienie do celu otrzymasz 10 punktow, jesli \n kurczak spadnie na ziemie, stracisz wtedy jedno z twoich trzech zyc. Do poruszania sie uzywaj strzalek \n lewo prawo, aby oddac strzal uzyj spacji.");
+                    sf::Text text2;
 
-                    //                    text2.setFont(font);
-                    //                    text2.setColor(sf::Color::Magenta);
-                    //                    text2.setString("\n \n \n \n Wybierz tlo poprzez klikniecie odpowiedniej litery na klawiaturze: \n T -trawa \n N-niebo \n L-las");
-                    //                    text2.setCharacterSize(15);
-                    //                    sf::Text text3;
-                    //                    text3.setFont(font);
-                    //                    text3.setCharacterSize(15);
-                    //                    text3.setColor(sf::Color::Yellow);
-                    //                    text3.setString("\n \n \n \n \n \n \n \n \n Wybierz postac poprzez klikniecie odpowiedniej litery na klawiaturze: \n P-pikachu \n C-cyan z gry among us \n M-mario");
+                    text2.setFont(font);
+                    text2.setColor(sf::Color::Magenta);
+                    text2.setString("\n \n \n \n Podczas gry co jakis czas beda spadaly bonusy, ktore ulatwia lub utrudnia twoja rozgrywke \n CZARNE SERCE- odbiera ci jedno zycie \n CZERWONE SERCE- dodaje ci jedno zycie \n LOD-zamraza kurczaki, po oddaniu 10 strzalow zaczynaja spada znowu");
+                    text2.setCharacterSize(15);
 
-                    //                    sf::Text text4;
-                    //                    text4.setFont(font);
-                    //                    text4.setCharacterSize(25);
-                    //                    text4.setColor(sf::Color::Red);
-                    //                    text4.setString("\n \n \n \n \n \n \n \n \n \n \n \n \n \n  Aby zamknac to okno nacisnij enter");
+                    sf::Text text3;
+                    text3.setFont(font);
+                    text3.setCharacterSize(25);
+                    text3.setColor(sf::Color::Red);
+                    text3.setString("\n \n \n \n \n Pamietaj, aby przed rozpoczeciem gry wejsc w ustaweienia gry, \n mozesz tam wybrac poziom trudnosci, postac lub tlo");
 
-                    while (jak_grac.isOpen()) {
+
+                    while (zasady.isOpen()) {
                         sf::Event event;
-                        while (jak_grac.pollEvent(event)) {
+                        while (zasady.pollEvent(event)) {
 
                             if (event.type == sf::Event::Closed){
-                                jak_grac.close();
+                                zasady.close();
+                            }
+                            if(event.type==sf::Event::KeyReleased)
+                            {
+                               if(event.key.code==sf::Keyboard::Enter)
+                                {
+                                    zasady.close();
+                                }
+                            }
+                            zasady.clear(sf::Color::Black);
+                       zasady.draw(text);
+                       zasady.draw(text2);
+                       zasady.draw(text3);
+
+                            zasady.display();
+
+
+
+                }
+                    }
+                }
+                if(event.key.code==sf::Keyboard::Enter&& menu.GetPressedId()==1)
+                {
+                    sf::RenderWindow ustawienia(sf::VideoMode(800, 600), "Ustawienia");
+                    Settings settings(ustawienia);
+
+
+                    while (ustawienia.isOpen()) {
+                        sf::Event event;
+                        while (ustawienia.pollEvent(event)) {
+
+                            if (event.type == sf::Event::Closed){
+                                ustawienia.close();
                             }
                             if (event.type == sf::Event::KeyReleased){
                                 if(event.key.code==sf::Keyboard::Up)
@@ -83,7 +111,7 @@ int main() {
 
                                 if(event.key.code==sf::Keyboard::Escape)
                                 {
-                                    jak_grac.close();
+                                    ustawienia.close();
                                 }
                                 if(event.key.code==sf::Keyboard::Enter&& settings.GetPressedId()==0)
                                 {
@@ -215,13 +243,9 @@ int main() {
                                 }
                             }
                         }
-                        jak_grac.clear(sf::Color::Black);
-                        //                        jak_grac.draw(text);
-                        //                        jak_grac.draw(text2);
-                        //                        jak_grac.draw(text3);
-                        //                        jak_grac.draw(text4);
-                        settings.draw(jak_grac);
-                        jak_grac.display();
+                        ustawienia.clear(sf::Color::Black);
+                        settings.draw(ustawienia);
+                        ustawienia.display();
                     }
                 }
                 if(event.key.code==sf::Keyboard::Enter&& menu.GetPressedId()==0)
@@ -238,7 +262,10 @@ int main() {
                     Heart heart;
                     float seconds=0;
                     float black_seconds=0;
-                    //float chicken_frequency=1.5;
+                    float chicken_frequency=game.get_chicken_frequency();
+                    float heart_frequency=game.get_heart_frequency();
+                    float black_heart_frequency=game.get_black_heart_frequency();
+                    float ice_frequency=game.get_ice_frequency();
                     float chicken_seconds=0;
                     char string[20];
                     int strzaly=0;
@@ -248,18 +275,18 @@ int main() {
                     std::vector<std::unique_ptr<Strzal>> pociski;
                     std::vector<std::unique_ptr<Bonus>> bonusy;
 
-                    for(int i=0; i<100;i++){
-                        auto new_chicken=std::make_unique<Chicken>();
-                        if(i==0){
-                            new_chicken->setPosition(rand()%700, 0 );
-                            new_chicken->speed(game);
-                        }
-                        if(i>1){
-                            new_chicken->setPosition(rand()%700, shapes[i-1]->getPosition().y-60);
-                            new_chicken->speed(game);
-                        }
-                        shapes.emplace_back(std::move(new_chicken));
-                    }
+//                    for(int i=0; i<100;i++){
+//                        auto new_chicken=std::make_unique<Chicken>();
+//                        if(i==0){
+//                            new_chicken->setPosition(rand()%700, 0 );
+//                            new_chicken->speed(game);
+//                        }
+//                        if(i>1){
+//                            new_chicken->setPosition(rand()%700, shapes[i-1]->getPosition().y-60);
+//                            new_chicken->speed(game);
+//                        }
+//                        shapes.emplace_back(std::move(new_chicken));
+//                    }
                     sf::Text points;
                     sf::Font font;
                     font.loadFromFile("Comic Sans MS 400.ttf");
@@ -281,7 +308,7 @@ int main() {
                                 if(event.key.code==sf::Keyboard::Space)
                                 {
                                     auto pocisk=std::make_unique<Strzal>();
-                                    pocisk->setPosition(hero1.getPosition().x, hero1.getPosition().y);
+                                    pocisk->setPosition(hero1.getPosition().x+0.5*hero1.getGlobalBounds().width, hero1.getPosition().y);
                                     pociski.emplace_back(std::move(pocisk));
                                     if(game.is_freeze()==true){
                                         strzaly--;
@@ -306,15 +333,23 @@ int main() {
                         chicken_seconds+=time.asSeconds();
                         itoa(hero1.get_points(), string, 10 );
                         points.setString(string);
-
-                        if(seconds>20){
+                        if(game.is_freeze()==false){
+                        if(chicken_seconds>chicken_frequency){
+                            auto zycie=std::make_unique<Chicken>();
+                            zycie->setPosition(rand()%window.getSize().x,-50);
+                            zycie->speed(game);
+                          shapes.emplace_back(std::move(zycie));
+                            chicken_seconds=0;
+                        }
+}
+                        if(seconds>heart_frequency){
                             auto zycie=std::make_unique<Heart>();
                             zycie->setPosition(rand()%window.getSize().x,-50);
                             bonusy.emplace_back(std::move(zycie));
                             seconds=0;
                         }
 
-                        if(black_seconds>15){
+                        if(black_seconds>black_heart_frequency){
                             auto zycie=std::make_unique<Black_heart>();
                             zycie->setPosition(rand()%window.getSize().x,-50);
                             zycie->setBounds(0, window.getSize().x, 0, window.getSize().y);
@@ -322,7 +357,7 @@ int main() {
                             black_seconds=0;
                         }
 
-                        if(seconds_freeze>17){
+                        if(seconds_freeze>ice_frequency){
                             auto zycie=std::make_unique<Freeze>();
                             zycie->setPosition(rand()%window.getSize().x,-50);
                             bonusy.emplace_back(std::move(zycie));
@@ -332,16 +367,7 @@ int main() {
                         window.draw(background);
                         hero1.Animacja(elapsed);
 
-                        for(auto it=shapes.begin(); it!=shapes.end();++it){
-                            for(auto it_p=pociski.begin(); it_p!=pociski.end();++it_p){
-                                if(it_p->get()->getGlobalBounds().intersects((it->get()->getGlobalBounds())))
-                                {
-                                    hero1.add_points();
-                                    shapes.erase(it);
-                                    pociski.erase(it_p--);
-                                }
-                            }
-                        }
+
                         for(auto it=bonusy.begin(); it!=bonusy.end();++it){
                             if(it->get()->getGlobalBounds().intersects(hero1.getGlobalBounds())){
                                 if(it->get()->is_black()==true && it->get()->is_freeze()==false)
@@ -366,6 +392,17 @@ int main() {
                                         s->freeze();
                                         game.set_freeze();
                                     }
+                                    break;
+                                }
+                            }
+                        }
+                        for(auto it=shapes.begin(); it!=shapes.end();++it){
+                            for(auto it_p=pociski.begin(); it_p!=pociski.end();++it_p){
+                                if(it_p->get()->getGlobalBounds().intersects((it->get()->getGlobalBounds())))
+                                {
+                                    hero1.add_points();
+                                    shapes.erase(it--);
+                                    pociski.erase(it_p++);
                                     break;
                                 }
                             }
@@ -397,6 +434,7 @@ int main() {
                                 break;
                             }
                         }
+
                         for(auto it=shapes.begin(); it!=shapes.end();++it){
                             if(it->get()->getGlobalBounds().top+it->get()->getGlobalBounds().height>=window.getSize().y){
                                 hero1.usun_zycie();

@@ -1,5 +1,6 @@
 #include "klasy.h"
-
+#include <random>
+#include <iostream>
 Background::Background(std::string background, float x, float y){
     texture_.loadFromFile(background);
     texture_.setRepeated(true);
@@ -111,23 +112,27 @@ Menu::Menu(sf::RenderWindow &window){
     text[0].setFont(font);
     text[0].setColor(sf::Color::Cyan);
     text[0].setString("GRAJ");
-    text[0].setPosition((width/1.9), (height/4*1));
+    text[0].setPosition((width/2), (height/5)*1);
 
     text[1].setFont(font);
     text[1].setColor(sf::Color::White);
-    text[1].setString("ZASADY GRY + USTAWIENIA");
-    text[1].setPosition(width/3, (height/4)*2);
+    text[1].setString("USTAWIENIA");
+    text[1].setPosition(width/2, (height/5)*2);
 
     text[2].setFont(font);
     text[2].setColor(sf::Color::White);
     text[2].setString("WYJSCIE");
-    text[2].setPosition(width/2, (height/4)*3);
-    selecteditemid=0;
+    text[2].setPosition(width/2, (height/5)*3);
 
+    text[3].setFont(font);
+    text[3].setColor(sf::Color::White);
+    text[3].setString("JAK GRAC");
+    text[3].setPosition(width/2, (height/5)*4);
+    selecteditemid=0;
 }
 
 void Menu::draw(sf::RenderWindow &window){
-    for(int i=0; i<3; i++)
+    for(int i=0; i<4; i++)
     {
         window.draw(text[i]);
     }
@@ -144,7 +149,7 @@ void Menu::MoveUp(){
 }
 
 void Menu::MoveDown(){
-    if(selecteditemid+1<3)
+    if(selecteditemid+1<4)
     {
         text[selecteditemid].setColor(sf::Color::White);
         selecteditemid++;
@@ -210,23 +215,6 @@ int Settings::GetPressedId(){
 }
 
 
-void Menu::set_background(std::string background){
-    chosen_background_name_=background;
-
-}
-
-std::string Menu::get_background(){
-    return chosen_background_name_;
-}
-
-void Menu::set_hero_name(std::string background){
-    chosen_hero_name_=background;
-
-}
-
-std::string Menu::get_hero_name(){
-    return chosen_hero_name_;
-}
 
 
 
@@ -252,6 +240,58 @@ void Game::set_background_name(std::string arg)
 void Game::set_character_name(std::string arg)
 {
     character_name_=arg;
+}
+
+float Game::get_ice_frequency()
+{
+    if(poziom_trudnosci=="easy"){
+        return 10;
+    }
+    else if(poziom_trudnosci=="medium"){
+        return 15;
+    }
+    else{
+        return 20;
+    }
+}
+
+float Game::get_chicken_frequency()
+{
+    if(poziom_trudnosci=="easy"){
+        return 2.5;
+    }
+    else if(poziom_trudnosci=="medium"){
+        return 2;
+    }
+    else{
+        return 1.5;
+    }
+}
+
+float Game::get_heart_frequency()
+{
+    if(poziom_trudnosci=="easy"){
+        return 7;
+    }
+    else if(poziom_trudnosci=="medium"){
+        return 10;
+    }
+    else{
+        return 13;
+    }
+}
+
+float Game::get_black_heart_frequency()
+{
+    if(poziom_trudnosci=="easy"){
+        return 10;
+    }
+    else if(poziom_trudnosci=="medium"){
+        return 7;
+    }
+    else{
+        return 3;
+    }
 }
 Chicken::Chicken():AnimatedSprite("chicken.png"){
     this->setScale(0.1,0.1);
@@ -309,6 +349,11 @@ void Heart::move(const sf::Time &elapsed)
 Black_heart::Black_heart():Bonus("black_heart.png")
 {
 this->setScale(0.1,0.1);
+
+      static std::default_random_engine e{static_cast<long unsigned int>(time(0))};
+      std::uniform_int_distribution<int> d{-30, 30};
+      velocity_x_= d(e);
+
 }
 
 void Black_heart::move(const sf::Time &elapsed)
@@ -405,5 +450,9 @@ int Movable::GetPressedId(){
     return selecteditemid;
 }
 
-
+int randomInt(int min, int max) {
+  static std::default_random_engine e{static_cast<long unsigned int>(time(0))};
+  std::uniform_int_distribution<int> d{min, max};
+  return d(e);
+}
 

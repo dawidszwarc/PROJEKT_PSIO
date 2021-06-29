@@ -52,7 +52,7 @@ public:
 
 private:
     int velocity_y_=60;
-    int velocity_x_=-300;
+    int velocity_x_;
     float left_border_, right_border_, top_border_, bottom_border_;
 
 
@@ -90,7 +90,7 @@ public:
     void dodaj_zycie();
     void jump();
 private:
-    float speed_x=100;
+    float speed_x=130;
     float left_border_, right_border_, top_border_, bottom_border_;
     sf::Texture texture_;
     int hearts_=3;
@@ -101,7 +101,6 @@ private:
 
 class Game{
 public:
-
     std::string get_poziom_trudnosci();
     std::string get_character_name();
       std::string get_background_name();
@@ -111,8 +110,12 @@ public:
     void set_poziom_trudnoci(std::string arg);
     void set_background_name(std::string arg);
     void set_character_name(std::string arg);
+    float get_ice_frequency();
+    float get_chicken_frequency();
+    float get_heart_frequency();
+    float get_black_heart_frequency();
 private:
-    std::string poziom_trudnosci, character_name_, background_name_;
+    std::string poziom_trudnosci="easy", character_name_="pikachu.png", background_name_="niebo.png";
     bool is_freeze_=false;
 };
 
@@ -145,9 +148,7 @@ public:
 private:
     int selecteditemid;
     sf::Font font;
-    sf::Text text[3];
-    std::string chosen_background_name_;
-    std::string chosen_hero_name_;
+    sf::Text text[4];
 };
 class Settings{
 public:
