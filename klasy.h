@@ -17,15 +17,55 @@ class AnimatedSprite:public sf::Sprite{
             private:
                 sf::Texture texture_;
 };
-
-class Heart:public AnimatedSprite{
+class Bonus:public AnimatedSprite{
 public:
-    Heart();
-    void move_heart(const sf::Time &elapsed);
-private:
-    float speed_y_=40;
+    Bonus(std::string file);
+    virtual void move(const sf::Time &elapsed)=0;
+      virtual bool is_freeze()=0;
+    virtual bool is_black()=0;
+
+
+
 };
 
+class Heart:public Bonus{
+public:
+    Heart();
+    void move(const sf::Time &elapsed);
+    bool is_freeze(){return false;}
+    bool is_black(){return false;};
+
+private:
+    float speed_y_=40;
+
+
+};
+class Black_heart:public Bonus{
+public:
+   Black_heart();
+    void move(const sf::Time &elapsed);
+    void setBounds(float left, float right, float top, float bottom);
+    void bounce();
+
+    bool is_freeze(){return false;}
+    bool is_black(){return true;};
+
+private:
+    int velocity_y_=60;
+    int velocity_x_=-300;
+    float left_border_, right_border_, top_border_, bottom_border_;
+
+
+};
+class Freeze:public Bonus{
+public:
+    Freeze();
+    void move(const sf::Time &elapsed);
+    bool is_black(){return false;}
+    bool is_freeze(){return true;};
+private:
+    float speed_y_=100;
+};
 class Strzal:public AnimatedSprite{
 public:
     ~Strzal(){};
@@ -58,14 +98,31 @@ private:
      std::vector<std::unique_ptr<Heart>> zycie;
 };
 
+
+class Game{
+public:
+    Game(std::string arg);
+    std::string get_poziom_trudnosci();
+    void set_freeze(){is_freeze_=true;};
+    void set_freeze_false(){is_freeze_=false;}
+    bool is_freeze(){return  is_freeze_;};
+private:
+    std::string poziom_trudnosci;
+    bool is_freeze_=false;
+};
+
 class Chicken:public AnimatedSprite{
 public:
     ~Chicken(){}
     Chicken();
+    void speed(Game &game);
     void animation_chicken(const sf::Time elapsed);
+    void set_speed(int arg);
+    void freeze();
+
 private:
     sf::Texture texture_;
-    float speed_y_=30;
+    float speed_y_;
 };
 
 class Menu{

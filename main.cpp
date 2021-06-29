@@ -26,13 +26,11 @@ int main() {
                 }
                 if(event.key.code==sf::Keyboard::Down)
                 {
-
                     menu.MoveDown();
                 }
                 if(event.key.code==sf::Keyboard::Enter&& menu.GetPressedId()==2)
                 {
                     window_menu.close();
-
                 }
                 if(event.key.code==sf::Keyboard::Enter&& menu.GetPressedId()==1)
                 {
@@ -111,6 +109,7 @@ int main() {
                 }
                 if(event.key.code==sf::Keyboard::Enter&& menu.GetPressedId()==0)
                 {
+                    Game game("easy");
                     window_menu.close();
                     sf::RenderWindow window(sf::VideoMode(800, 600), "Falling chickens");
                     window.setFramerateLimit(30);
@@ -118,37 +117,34 @@ int main() {
                     Hero hero1(window, menu.get_hero_name());
                     Heart heart;
                     float seconds=0;
+                    float black_seconds=0;
                     //float chicken_frequency=1.5;
                     float chicken_seconds=0;
                     char string[20];
+                    int strzaly=0;
+                    float seconds_freeze=0;
 
                     std::vector<std::unique_ptr<Chicken>> shapes;
                     std::vector<std::unique_ptr<Strzal>> pociski;
-                    std::vector<std::unique_ptr<Heart>> bonusy;
-                    for(int i=0; i<100;i++){
+                    std::vector<std::unique_ptr<Bonus>> bonusy;
 
-                        //                        if(chicken_seconds>chicken_frequency){
+                    for(int i=0; i<100;i++){
                         auto new_chicken=std::make_unique<Chicken>();
                         if(i==0){
                             new_chicken->setPosition(rand()%700, 0 );
+                            new_chicken->speed(game);
                         }
                         if(i>1){
                             new_chicken->setPosition(rand()%700, shapes[i-1]->getPosition().y-60);
-
+                            new_chicken->speed(game);
                         }
                         shapes.emplace_back(std::move(new_chicken));
-
-                        //chicken_seconds=0;
-                        //}
-
                     }
                     sf::Text points;
                     sf::Font font;
                     font.loadFromFile("Comic Sans MS 400.ttf");
                     points.setPosition(0,50);
-
                     points.setFont(font);
-
                     points.setCharacterSize(30);
                     points.setColor(sf::Color::Red);
 
@@ -167,31 +163,54 @@ int main() {
                                     auto pocisk=std::make_unique<Strzal>();
                                     pocisk->setPosition(hero1.getPosition().x, hero1.getPosition().y);
                                     pociski.emplace_back(std::move(pocisk));
+                                    if(game.is_freeze()==true){
+                                        strzaly--;
+                                        std::cout<<strzaly<<std::endl;
+                                    }
+                                    if(strzaly==0)
+                                    {
+                                        game.set_freeze_false();
+                                        for( auto &s : shapes) {
+                                            s->speed(game);
+                                        }
+                                    }
                                 }
-
                             }
                         }
                         window.clear(sf::Color::Black);
                         sf::Time elapsed=clock.restart();
                         sf::Time time=timer.restart();
                         seconds+=time.asSeconds();
+                        black_seconds+=time.asSeconds();
+                        seconds_freeze+=time.asSeconds();
                         chicken_seconds+=time.asSeconds();
                         itoa(hero1.get_points(), string, 10 );
                         points.setString(string);
 
-
-
-                        if(seconds>5){
+                        if(seconds>20){
                             auto zycie=std::make_unique<Heart>();
                             zycie->setPosition(rand()%window.getSize().x,-50);
                             bonusy.emplace_back(std::move(zycie));
                             seconds=0;
+                        }
 
+                        if(black_seconds>15){
+                            auto zycie=std::make_unique<Black_heart>();
+                            zycie->setPosition(rand()%window.getSize().x,-50);
+                            zycie->setBounds(0, window.getSize().x, 0, window.getSize().y);
+                            bonusy.emplace_back(std::move(zycie));
+                            black_seconds=0;
+                        }
+
+                        if(seconds_freeze>17){
+                            auto zycie=std::make_unique<Freeze>();
+                            zycie->setPosition(rand()%window.getSize().x,-50);
+                            bonusy.emplace_back(std::move(zycie));
+                            seconds_freeze=0;
                         }
 
                         window.draw(background);
                         hero1.Animacja(elapsed);
-
 
                         for(auto it=shapes.begin(); it!=shapes.end();++it){
                             for(auto it_p=pociski.begin(); it_p!=pociski.end();++it_p){
@@ -200,25 +219,37 @@ int main() {
                                     hero1.add_points();
                                     shapes.erase(it);
                                     pociski.erase(it_p--);
-
-
                                 }
-
                             }
                         }
                         for(auto it=bonusy.begin(); it!=bonusy.end();++it){
-
                             if(it->get()->getGlobalBounds().intersects(hero1.getGlobalBounds())){
-                                bonusy.erase(it);
-                                hero1.dodaj_zycie();
-                                break;
+                                if(it->get()->is_black()==true && it->get()->is_freeze()==false)
+                                {
+                                    std::cout<<"BLACK HEART"<<std::endl;
+                                    bonusy.erase(it--);
+                                    hero1.usun_zycie();
+                                    break;
+                                }
+                                else if(it->get()->is_black()==false && it->get()->is_freeze()==false){
+                                    std::cout<<"HEART"<<std::endl;
+                                    bonusy.erase(it--);
+                                    hero1.dodaj_zycie();
+                                    break;
+                                }
+                                else if(it->get()->is_freeze()==true && it->get()->is_black()== false)
+                                {
+                                    bonusy.erase(it--);
+                                    std::cout<<"Zamrozono"<<std::endl;
+                                    strzaly=10;
+                                    for( auto &s : shapes) {
+                                        s->freeze();
+                                        game.set_freeze();
+                                    }
+                                    break;
+                                }
                             }
-
-
                         }
-
-
-
                         hero1.draw_hero(window);
                         for(const auto &s : shapes) {
                             window.draw(*s);
@@ -229,15 +260,12 @@ int main() {
                         for( auto &s : pociski) {
                             s->Animacja(elapsed);
                         }
-
                         for( auto &s : shapes) {
                             s->animation_chicken(elapsed);
                         }
-
                         for( auto &s : bonusy) {
-                            s->move_heart(elapsed);
+                            s->move(elapsed);
                         }
-
                         for( const auto &s : bonusy) {
                             window.draw(*s);
                         }
@@ -248,10 +276,7 @@ int main() {
                                 pociski.erase(it);
                                 break;
                             }
-
                         }
-
-
                         for(auto it=shapes.begin(); it!=shapes.end();++it){
                             if(it->get()->getGlobalBounds().top+it->get()->getGlobalBounds().height>=window.getSize().y){
                                 hero1.usun_zycie();
@@ -261,7 +286,6 @@ int main() {
                                     sf::Text message;
                                     sf::Font font;
                                     font.loadFromFile("Comic Sans MS 400.ttf");
-
                                     message.setFont(font);
                                     message.setString("PRZEGRALES");
                                     message.setCharacterSize(30);
@@ -274,21 +298,14 @@ int main() {
                                                 komunikat.close();
                                                 window.close();
                                             }
-
-
                                         }
                                         komunikat.clear(sf::Color::Black);
                                         komunikat.draw(message);
                                         komunikat.display();
-
-
                                     }
                                 }
                                 break;
-
-
                             }
-
                         }
                         window.display();
                     }
@@ -299,6 +316,5 @@ int main() {
         menu.draw(window_menu);
         window_menu.display();
     }
-
     return 0;
 }

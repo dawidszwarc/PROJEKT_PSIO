@@ -166,24 +166,111 @@ std::string Menu::get_hero_name(){
     return chosen_hero_name_;
 }
 
-Chicken::Chicken():AnimatedSprite("chicken.png"){
-    this->setScale(0.1,0.1);
+Game::Game(std::string arg)
+{
+    poziom_trudnosci=arg;
 }
 
+std::string Game::get_poziom_trudnosci()
+{
+    return poziom_trudnosci;
+}
+Chicken::Chicken():AnimatedSprite("chicken.png"){
+    this->setScale(0.1,0.1);
+
+}
+void Chicken::speed(Game &game){
+    if(game.get_poziom_trudnosci()=="easy"){
+        this->set_speed(30);
+    }
+    else if(game.get_poziom_trudnosci()=="medium")
+    {
+        this->set_speed(60);
+    }
+    else if(game.get_poziom_trudnosci()=="hard")
+    {
+        this->set_speed(90);
+    }
+
+}
 void Chicken::animation_chicken(const sf::Time elapsed){
     float time=elapsed.asSeconds();
     float distance_y=time*speed_y_;
     this->move(0,distance_y);
 }
 
-Heart::Heart():AnimatedSprite("heart.png"){
+void Chicken::set_speed(int arg)
+{
+    speed_y_=arg;
+}
+
+void Chicken::freeze()
+{
+    this->speed_y_=0;
+}
+
+Bonus::Bonus(std::string file):AnimatedSprite(file)
+{
+
+}
+
+Heart::Heart():Bonus("heart.png"){
     this->setScale(0.05,0.05);
 
 }
 
-void Heart::move_heart(const sf::Time &elapsed)
+void Heart::move(const sf::Time &elapsed)
 {
     float time=elapsed.asSeconds();
     float distance_y=time*speed_y_;
-    this->move(0,distance_y);
+    this->sf::Sprite::move(0,distance_y);
+}
+
+
+
+Black_heart::Black_heart():Bonus("black_heart.png")
+{
+this->setScale(0.1,0.1);
+}
+
+void Black_heart::move(const sf::Time &elapsed)
+{
+    bounce();
+    float time=elapsed.asSeconds();
+    float distance_y=time*velocity_y_;
+    float distance_x=time*velocity_x_;
+
+    this->sf::Sprite::move(distance_x,distance_y);
+
+}
+
+void Black_heart::setBounds(float left, float right, float top, float bottom)
+{
+    left_border_=left;
+    right_border_=right;
+    top_border_=top;
+    bottom_border_=bottom;
+}
+
+void Black_heart::bounce()
+{
+    if(this->getGlobalBounds().left<=left_border_)
+    {
+        this->velocity_x_=abs(this->velocity_x_);
+    }
+    else if((this->getGlobalBounds().left+this->getGlobalBounds().width)>=right_border_){
+        this->velocity_x_=-abs(this->velocity_x_);
+    }
+}
+
+
+Freeze::Freeze():Bonus("ice.png")
+{
+    setScale(0.1, 0.1);
+}
+void Freeze::move(const sf::Time &elapsed)
+{
+    float time=elapsed.asSeconds();
+    float distance_y=time*speed_y_;
+    this->sf::Sprite::move(0,distance_y);
 }
