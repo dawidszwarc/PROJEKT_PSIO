@@ -12,6 +12,8 @@ int main() {
     sf::RenderWindow window_menu(sf::VideoMode(800, 600), "Menu");
 
     Menu menu(window_menu);
+    Game game;
+
     while (window_menu.isOpen()) {
         sf::Event event;
         while (window_menu.pollEvent(event)) {
@@ -28,38 +30,39 @@ int main() {
                 {
                     menu.MoveDown();
                 }
-                if(event.key.code==sf::Keyboard::Enter&& menu.GetPressedId()==2)
+                if(event.key.code==sf::Keyboard::Enter && menu.GetPressedId()==2)
                 {
                     window_menu.close();
                 }
                 if(event.key.code==sf::Keyboard::Enter&& menu.GetPressedId()==1)
                 {
                     sf::RenderWindow jak_grac(sf::VideoMode(800, 600), "Zasady");
-                    sf::Text text;
-                    sf::Font font;
-                    font.loadFromFile("Comic Sans MS 400.ttf");
-                    text.setFont(font);
-                    text.setColor(sf::Color::White);
-                    text.setString("GRAJ");
-                    text.setCharacterSize(15);
-                    text.setString("Twoim zadaniem jest strzelanie do spadajacych kuczakow. Za trafienie do celu otrzymasz 10 punktow, jesli \n kurczak spadnie na ziemie, stracisz wtedy jedno z twoich trzech zyc. Do poruszania sie uzywaj strzalek \n lewo prawo, aby oddac strzal uzyj spacji.");
-                    sf::Text text2;
+                    Settings settings(jak_grac);
+                    //                    sf::Text text;
+                    //                    sf::Font font;
+                    //                    font.loadFromFile("Comic Sans MS 400.ttf");
+                    //                    text.setFont(font);
+                    //                    text.setColor(sf::Color::White);
+                    //                    text.setString("GRAJ");
+                    //                    text.setCharacterSize(15);
+                    //                    text.setString("Twoim zadaniem jest strzelanie do spadajacych kuczakow. Za trafienie do celu otrzymasz 10 punktow, jesli \n kurczak spadnie na ziemie, stracisz wtedy jedno z twoich trzech zyc. Do poruszania sie uzywaj strzalek \n lewo prawo, aby oddac strzal uzyj spacji.");
+                    //                    sf::Text text2;
 
-                    text2.setFont(font);
-                    text2.setColor(sf::Color::Magenta);
-                    text2.setString("\n \n \n \n Wybierz tlo poprzez klikniecie odpowiedniej litery na klawiaturze: \n T -trawa \n N-niebo \n L-las");
-                    text2.setCharacterSize(15);
-                    sf::Text text3;
-                    text3.setFont(font);
-                    text3.setCharacterSize(15);
-                    text3.setColor(sf::Color::Yellow);
-                    text3.setString("\n \n \n \n \n \n \n \n \n Wybierz postac poprzez klikniecie odpowiedniej litery na klawiaturze: \n P-pikachu \n C-cyan z gry among us \n M-mario");
+                    //                    text2.setFont(font);
+                    //                    text2.setColor(sf::Color::Magenta);
+                    //                    text2.setString("\n \n \n \n Wybierz tlo poprzez klikniecie odpowiedniej litery na klawiaturze: \n T -trawa \n N-niebo \n L-las");
+                    //                    text2.setCharacterSize(15);
+                    //                    sf::Text text3;
+                    //                    text3.setFont(font);
+                    //                    text3.setCharacterSize(15);
+                    //                    text3.setColor(sf::Color::Yellow);
+                    //                    text3.setString("\n \n \n \n \n \n \n \n \n Wybierz postac poprzez klikniecie odpowiedniej litery na klawiaturze: \n P-pikachu \n C-cyan z gry among us \n M-mario");
 
-                    sf::Text text4;
-                    text4.setFont(font);
-                    text4.setCharacterSize(25);
-                    text4.setColor(sf::Color::Red);
-                    text4.setString("\n \n \n \n \n \n \n \n \n \n \n \n \n \n  Aby zamknac to okno nacisnij enter");
+                    //                    sf::Text text4;
+                    //                    text4.setFont(font);
+                    //                    text4.setCharacterSize(25);
+                    //                    text4.setColor(sf::Color::Red);
+                    //                    text4.setString("\n \n \n \n \n \n \n \n \n \n \n \n \n \n  Aby zamknac to okno nacisnij enter");
 
                     while (jak_grac.isOpen()) {
                         sf::Event event;
@@ -69,52 +72,169 @@ int main() {
                                 jak_grac.close();
                             }
                             if (event.type == sf::Event::KeyReleased){
-                                if(event.key.code==sf::Keyboard::T)
+                                if(event.key.code==sf::Keyboard::Up)
                                 {
-                                    menu.set_background("grass.png");
+                                    settings.MoveUp();
                                 }
-                                if(event.key.code==sf::Keyboard::N)
+                                if(event.key.code==sf::Keyboard::Down)
                                 {
-                                    menu.set_background("niebo.png");
+                                    settings.MoveDown();
                                 }
-                                if(event.key.code==sf::Keyboard::L)
-                                {
-                                    menu.set_background("las.png");
-                                }
-                                if(event.key.code==sf::Keyboard::C)
-                                {
-                                    menu.set_hero_name("cyan.png");
-                                }
-                                if(event.key.code==sf::Keyboard::M)
-                                {
-                                    menu.set_hero_name("mario.png");
-                                }
-                                if(event.key.code==sf::Keyboard::P)
-                                {
-                                    menu.set_hero_name("pikachu.png");
-                                }
-                                if(event.key.code==sf::Keyboard::Enter)
+
+                                if(event.key.code==sf::Keyboard::Escape)
                                 {
                                     jak_grac.close();
+                                }
+                                if(event.key.code==sf::Keyboard::Enter&& settings.GetPressedId()==0)
+                                {
+                                    sf::RenderWindow postac(sf::VideoMode(800, 600), "WYBOR POSTACI");
+                                    Movable wyborpostaci("Pikachu", "Cyan", "Mario", postac);
+
+                                    while (postac.isOpen()) {
+                                        sf::Event event;
+                                        while (postac.pollEvent(event)) {
+                                            if (event.type == sf::Event::Closed){
+                                                postac.close();
+                                            }
+                                            if (event.type == sf::Event::KeyReleased){
+                                                if(event.key.code==sf::Keyboard::Enter&& wyborpostaci.GetPressedId()==0)
+                                                {
+                                                    game.set_character_name("pikachu.png");
+                                                    postac.close();
+                                                }
+                                                if(event.key.code==sf::Keyboard::Enter&& wyborpostaci.GetPressedId()==1)
+                                                {
+                                                    game.set_character_name("cyan.png");
+                                                    postac.close();
+                                                }
+                                                if(event.key.code==sf::Keyboard::Enter&& wyborpostaci.GetPressedId()==2)
+                                                {
+                                                    game.set_character_name("mario.png");
+                                                    postac.close();
+                                                }
+                                                if(event.key.code==sf::Keyboard::Right)
+                                                {
+                                                    wyborpostaci.MoveRight();
+                                                }
+                                                if(event.key.code==sf::Keyboard::Left)
+                                                {
+                                                    wyborpostaci.MoveLeft();
+                                                }
+                                            }
+                                        }
+                                        postac.clear(sf::Color::Black);
+                                        wyborpostaci.draw(postac);
+                                        postac.display();
+                                    }
+                                }
+                                if(event.key.code==sf::Keyboard::Enter&& settings.GetPressedId()==1)
+                                {
+                                    sf::RenderWindow tlo(sf::VideoMode(800, 600), "WYBOR TLA");
+                                    Movable wybortla("niebo", "trawa", "las", tlo);
+                                    while (tlo.isOpen()) {
+                                        sf::Event event;
+                                        while (tlo.pollEvent(event)) {
+                                            if (event.type == sf::Event::Closed){
+                                                tlo.close();
+                                            }
+                                            if (event.type == sf::Event::KeyReleased){
+                                                if(event.key.code==sf::Keyboard::Enter && wybortla.GetPressedId()==0)
+                                                {
+                                                    game.set_background_name("niebo.png");
+                                                    tlo.close();
+                                                }
+                                                if(event.key.code==sf::Keyboard::Enter  && wybortla.GetPressedId()==1)
+                                                {
+                                                    game.set_background_name("grass.png");
+                                                    tlo.close();
+                                                }
+                                                if(event.key.code==sf::Keyboard::Enter  && wybortla.GetPressedId()==2)
+                                                {
+                                                    game.set_background_name("las.png");
+                                                    tlo.close();
+                                                }
+                                                if(event.key.code==sf::Keyboard::Right)
+                                                {
+                                                    wybortla.MoveRight();
+                                                }
+                                                if(event.key.code==sf::Keyboard::Left)
+                                                {
+                                                    wybortla.MoveLeft();
+                                                }
+
+                                            }
+                                        }
+                                        tlo.clear(sf::Color::Black);
+                                        wybortla.draw(tlo);
+                                        tlo.display();
+                                    }
+                                }
+                                if(event.key.code==sf::Keyboard::Enter&& settings.GetPressedId()==2)
+                                {
+                                    sf::RenderWindow poziom(sf::VideoMode(800, 600), "POZIOM TRUDNOSCI");
+                                    Movable wyborpoziomu("easy", "medium", "hard", poziom);
+
+                                    while (poziom.isOpen()) {
+                                        sf::Event event;
+                                        while (poziom.pollEvent(event)) {
+
+                                            if (event.type == sf::Event::Closed){
+                                                poziom.close();
+                                            }
+                                            if (event.type == sf::Event::KeyReleased){
+                                                if(event.key.code==sf::Keyboard::Enter && wyborpoziomu.GetPressedId()==0)
+                                                {
+                                                    game.set_poziom_trudnoci("easy");
+                                                    poziom.close();
+                                                }
+                                                if(event.key.code==sf::Keyboard::Enter && wyborpoziomu.GetPressedId()==1)
+                                                {
+                                                    game.set_poziom_trudnoci("medium");
+                                                    poziom.close();
+                                                }
+                                                if(event.key.code==sf::Keyboard::Enter && wyborpoziomu.GetPressedId()==2)
+                                                {
+                                                    game.set_poziom_trudnoci("hard");
+                                                    poziom.close();
+                                                }
+                                                if(event.key.code==sf::Keyboard::Right)
+                                                {
+                                                    wyborpoziomu.MoveRight();
+                                                }
+                                                if(event.key.code==sf::Keyboard::Left)
+                                                {
+                                                    wyborpoziomu.MoveLeft();
+                                                }
+
+                                            }
+                                        }
+                                        poziom.clear(sf::Color::Black);
+                                        wyborpoziomu.draw(poziom);
+                                        poziom.display();
+                                    }
                                 }
                             }
                         }
                         jak_grac.clear(sf::Color::Black);
-                        jak_grac.draw(text);
-                        jak_grac.draw(text2);
-                        jak_grac.draw(text3);
-                        jak_grac.draw(text4);
+                        //                        jak_grac.draw(text);
+                        //                        jak_grac.draw(text2);
+                        //                        jak_grac.draw(text3);
+                        //                        jak_grac.draw(text4);
+                        settings.draw(jak_grac);
                         jak_grac.display();
                     }
                 }
                 if(event.key.code==sf::Keyboard::Enter&& menu.GetPressedId()==0)
                 {
-                    Game game("easy");
+                    std::cout<<game.get_background_name()<<std::endl;
+                    std::cout<<game.get_character_name()<<std::endl;
+                    std::cout<<game.get_poziom_trudnosci()<<std::endl;
+
                     window_menu.close();
                     sf::RenderWindow window(sf::VideoMode(800, 600), "Falling chickens");
                     window.setFramerateLimit(30);
-                    Background background(menu.get_background(), window.getSize().x, window.getSize().y);
-                    Hero hero1(window, menu.get_hero_name());
+                    Background background(game.get_background_name(), window.getSize().x, window.getSize().y);
+                    Hero hero1(window, game.get_character_name());
                     Heart heart;
                     float seconds=0;
                     float black_seconds=0;
@@ -281,30 +401,31 @@ int main() {
                             if(it->get()->getGlobalBounds().top+it->get()->getGlobalBounds().height>=window.getSize().y){
                                 hero1.usun_zycie();
                                 shapes.erase(it);
-                                if(hero1.get_hearts()==0){
-                                    sf::RenderWindow komunikat(sf::VideoMode(800, 600),"PRZEGRALES");
-                                    sf::Text message;
-                                    sf::Font font;
-                                    font.loadFromFile("Comic Sans MS 400.ttf");
-                                    message.setFont(font);
-                                    message.setString("PRZEGRALES");
-                                    message.setCharacterSize(30);
-                                    message.setColor(sf::Color::Red);
-                                    while (komunikat.isOpen()) {
-                                        sf::Event event;
-                                        while (komunikat.pollEvent(event)) {
-                                            if(event.type==sf::Event::Closed)
-                                            {
-                                                komunikat.close();
-                                                window.close();
-                                            }
-                                        }
-                                        komunikat.clear(sf::Color::Black);
-                                        komunikat.draw(message);
-                                        komunikat.display();
+
+                                break;
+                            }
+                        }
+                        if(hero1.get_hearts()==0){
+                            sf::RenderWindow komunikat(sf::VideoMode(800, 600),"PRZEGRALES");
+                            sf::Text message;
+                            sf::Font font;
+                            font.loadFromFile("Comic Sans MS 400.ttf");
+                            message.setFont(font);
+                            message.setString("PRZEGRALES");
+                            message.setCharacterSize(30);
+                            message.setColor(sf::Color::Red);
+                            while (komunikat.isOpen()) {
+                                sf::Event event;
+                                while (komunikat.pollEvent(event)) {
+                                    if(event.type==sf::Event::Closed)
+                                    {
+                                        komunikat.close();
+                                        window.close();
                                     }
                                 }
-                                break;
+                                komunikat.clear(sf::Color::Black);
+                                komunikat.draw(message);
+                                komunikat.display();
                             }
                         }
                         window.display();

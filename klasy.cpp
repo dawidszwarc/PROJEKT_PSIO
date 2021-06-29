@@ -20,7 +20,16 @@ void Strzal::Animacja(const sf::Time elapsed){
 
 Hero::Hero(sf::RenderWindow &window, std::string file):AnimatedSprite(file)
 {
+    if(file=="cyan.png"){
+        this->setScale(0.04, 0.04);
+
+    }
+    else if(file=="pikachu.png"){
+        setScale(0.05, 0.05);
+    }
+    else{
     this->setScale(0.1, 0.1);
+    }
     this->setBounds(0, window.getSize().x, 0, window.getSize().y);
     this->setPosition((window.getSize().x/2.0)-((this->getGlobalBounds().width)/2.0),(window.getSize().y-this->getGlobalBounds().height));
     for(int i=0; i<3; i++){
@@ -32,7 +41,6 @@ Hero::Hero(sf::RenderWindow &window, std::string file):AnimatedSprite(file)
         if(i>0){
            zycie[i]->setPosition(zycie[i-1]->getPosition().x+zycie[i]->getGlobalBounds().width,0);
         }
-
     }
 
 
@@ -148,6 +156,60 @@ int Menu::GetPressedId(){
     return selecteditemid;
 }
 
+
+Settings::Settings(sf::RenderWindow &window){
+    float width=window.getSize().x;
+    float height=window.getSize().y;
+    font.loadFromFile("Comic Sans MS 400.ttf");
+    text[0].setFont(font);
+    text[0].setColor(sf::Color::Cyan);
+    text[0].setString("POSTAC");
+    text[0].setPosition((width/1.9), (height/4*1));
+
+    text[1].setFont(font);
+    text[1].setColor(sf::Color::White);
+    text[1].setString("TLO");
+    text[1].setPosition(width/1.9, (height/4)*2);
+
+    text[2].setFont(font);
+    text[2].setColor(sf::Color::White);
+    text[2].setString("POZIOM TRUDNOSCI");
+    text[2].setPosition(width/1.9, (height/4)*3);
+    selecteditemid=0;
+
+}
+
+void Settings::draw(sf::RenderWindow &window){
+    for(int i=0; i<3; i++)
+    {
+        window.draw(text[i]);
+    }
+
+}
+
+void Settings::MoveUp(){
+    if(selecteditemid-1>=0)
+    {
+        text[selecteditemid].setColor(sf::Color::White);
+        selecteditemid--;
+        text[selecteditemid].setColor(sf::Color::Cyan);
+    }
+}
+
+void Settings::MoveDown(){
+    if(selecteditemid+1<3)
+    {
+        text[selecteditemid].setColor(sf::Color::White);
+        selecteditemid++;
+        text[selecteditemid].setColor(sf::Color::Cyan);
+    }
+}
+
+int Settings::GetPressedId(){
+    return selecteditemid;
+}
+
+
 void Menu::set_background(std::string background){
     chosen_background_name_=background;
 
@@ -166,14 +228,30 @@ std::string Menu::get_hero_name(){
     return chosen_hero_name_;
 }
 
-Game::Game(std::string arg)
-{
-    poziom_trudnosci=arg;
-}
+
 
 std::string Game::get_poziom_trudnosci()
 {
     return poziom_trudnosci;
+}
+
+std::string Game::get_character_name(){return character_name_;}
+
+std::string Game::get_background_name(){return background_name_;}
+
+void Game::set_poziom_trudnoci(std::string arg)
+{
+   poziom_trudnosci=arg;
+}
+
+void Game::set_background_name(std::string arg)
+{
+    background_name_=arg;
+}
+
+void Game::set_character_name(std::string arg)
+{
+    character_name_=arg;
 }
 Chicken::Chicken():AnimatedSprite("chicken.png"){
     this->setScale(0.1,0.1);
@@ -274,3 +352,58 @@ void Freeze::move(const sf::Time &elapsed)
     float distance_y=time*speed_y_;
     this->sf::Sprite::move(0,distance_y);
 }
+
+
+Movable::Movable(std::string a, std::string b, std::string c, sf::RenderWindow &window)
+{
+    float width=window.getSize().x;
+    float height=window.getSize().y;
+    font.loadFromFile("Comic Sans MS 400.ttf");
+    text[0].setFont(font);
+    text[0].setColor(sf::Color::Cyan);
+    text[0].setString(a);
+    text[0].setPosition(width/4, height/2);
+
+    text[1].setFont(font);
+    text[1].setColor(sf::Color::White);
+    text[1].setString(b);
+    text[1].setPosition((width/4)*2, height/2 );
+
+    text[2].setFont(font);
+    text[2].setColor(sf::Color::White);
+    text[2].setString(c);
+    text[2].setPosition( (width/4)*3,height/2);
+    selecteditemid=0;
+}
+
+void Movable::draw(sf::RenderWindow &window){
+    for(int i=0; i<3; i++)
+    {
+        window.draw(text[i]);
+    }
+
+}
+
+void Movable::MoveRight(){
+    if(selecteditemid+1<3)
+    {
+        text[selecteditemid].setColor(sf::Color::White);
+        selecteditemid++;
+        text[selecteditemid].setColor(sf::Color::Cyan);
+    }
+}
+void Movable::MoveLeft(){
+    if(selecteditemid-1>=0)
+    {
+        text[selecteditemid].setColor(sf::Color::White);
+        selecteditemid--;
+       text[selecteditemid].setColor(sf::Color::Cyan);
+    }
+}
+
+int Movable::GetPressedId(){
+    return selecteditemid;
+}
+
+
+

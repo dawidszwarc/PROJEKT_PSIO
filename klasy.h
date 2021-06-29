@@ -101,13 +101,18 @@ private:
 
 class Game{
 public:
-    Game(std::string arg);
+
     std::string get_poziom_trudnosci();
+    std::string get_character_name();
+      std::string get_background_name();
     void set_freeze(){is_freeze_=true;};
     void set_freeze_false(){is_freeze_=false;}
     bool is_freeze(){return  is_freeze_;};
+    void set_poziom_trudnoci(std::string arg);
+    void set_background_name(std::string arg);
+    void set_character_name(std::string arg);
 private:
-    std::string poziom_trudnosci;
+    std::string poziom_trudnosci, character_name_, background_name_;
     bool is_freeze_=false;
 };
 
@@ -144,4 +149,33 @@ private:
     std::string chosen_background_name_;
     std::string chosen_hero_name_;
 };
+class Settings{
+public:
+    Settings(sf::RenderWindow &window);
+    ~Settings(){};
+    void draw(sf::RenderWindow &window);
+    void MoveUp();
+    void MoveDown();
+    int GetPressedId();
+private:
+    int selecteditemid;
+    sf::Font font;
+    sf::Text text[3];
+
+};
+
+class Movable{
+public:
+    Movable(std::string a, std::string b, std:: string c, sf::RenderWindow &window);
+
+    void draw(sf::RenderWindow &window);
+    void MoveRight();
+    void MoveLeft();
+    int GetPressedId();
+protected:
+    int selecteditemid;
+    sf::Font font;
+    sf::Text text[3];
+};
+
 #endif // KLASY_H
