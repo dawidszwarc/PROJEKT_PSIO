@@ -9,23 +9,20 @@ private:
     sf::Texture texture_;
 };
 class AnimatedSprite:public sf::Sprite{
-    public:
-       AnimatedSprite(std::string texture_file_name){
-            texture_.loadFromFile(texture_file_name);
-            this->setTexture(texture_);
-        }
-            private:
-                sf::Texture texture_;
+public:
+    AnimatedSprite(std::string texture_file_name){
+        texture_.loadFromFile(texture_file_name);
+        this->setTexture(texture_);
+    }
+private:
+    sf::Texture texture_;
 };
 class Bonus:public AnimatedSprite{
 public:
     Bonus(std::string file);
     virtual void move(const sf::Time &elapsed)=0;
-      virtual bool is_freeze()=0;
+    virtual bool is_freeze()=0;
     virtual bool is_black()=0;
-
-
-
 };
 
 class Heart:public Bonus{
@@ -37,12 +34,10 @@ public:
 
 private:
     float speed_y_=40;
-
-
 };
 class Black_heart:public Bonus{
 public:
-   Black_heart();
+    Black_heart();
     void move(const sf::Time &elapsed);
     void setBounds(float left, float right, float top, float bottom);
     void bounce();
@@ -54,8 +49,6 @@ private:
     int velocity_y_=60;
     int velocity_x_;
     float left_border_, right_border_, top_border_, bottom_border_;
-
-
 };
 class Freeze:public Bonus{
 public:
@@ -95,7 +88,7 @@ private:
     sf::Texture texture_;
     int hearts_=3;
     int points=0;
-     std::vector<std::unique_ptr<Heart>> zycie;
+    std::vector<std::unique_ptr<Heart>> zycie;
 };
 
 
@@ -103,7 +96,7 @@ class Game{
 public:
     std::string get_poziom_trudnosci();
     std::string get_character_name();
-      std::string get_background_name();
+    std::string get_background_name();
     void set_freeze(){is_freeze_=true;};
     void set_freeze_false(){is_freeze_=false;}
     bool is_freeze(){return  is_freeze_;};
@@ -127,7 +120,6 @@ public:
     void animation_chicken(const sf::Time elapsed);
     void set_speed(int arg);
     void freeze();
-
 private:
     sf::Texture texture_;
     float speed_y_;
@@ -162,13 +154,11 @@ private:
     int selecteditemid;
     sf::Font font;
     sf::Text text[3];
-
 };
 
 class Movable{
 public:
     Movable(std::string a, std::string b, std:: string c, sf::RenderWindow &window);
-
     void draw(sf::RenderWindow &window);
     void MoveRight();
     void MoveLeft();

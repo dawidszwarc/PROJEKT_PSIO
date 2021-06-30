@@ -1,4 +1,3 @@
-
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -8,7 +7,13 @@
 #include <algorithm>
 #include "klasy.h"
 #include <string>
-
+#include <ctime>
+#include <random>
+int randomInt(int min, int max) {
+    static std::default_random_engine e{static_cast<long unsigned int>(time(0))};
+    std::uniform_int_distribution<int> d{min, max};
+    return d(e);
+}
 int main() {
     sf::RenderWindow window_menu(sf::VideoMode(800, 600), "Menu");
 
@@ -69,21 +74,21 @@ int main() {
                             }
                             if(event.type==sf::Event::KeyReleased)
                             {
-                               if(event.key.code==sf::Keyboard::Enter)
+                                if(event.key.code==sf::Keyboard::Enter)
                                 {
                                     zasady.close();
                                 }
                             }
                             zasady.clear(sf::Color::Black);
-                       zasady.draw(text);
-                       zasady.draw(text2);
-                       zasady.draw(text3);
+                            zasady.draw(text);
+                            zasady.draw(text2);
+                            zasady.draw(text3);
 
                             zasady.display();
 
 
 
-                }
+                        }
                     }
                 }
                 if(event.key.code==sf::Keyboard::Enter&& menu.GetPressedId()==1)
@@ -275,18 +280,18 @@ int main() {
                     std::vector<std::unique_ptr<Strzal>> pociski;
                     std::vector<std::unique_ptr<Bonus>> bonusy;
 
-//                    for(int i=0; i<100;i++){
-//                        auto new_chicken=std::make_unique<Chicken>();
-//                        if(i==0){
-//                            new_chicken->setPosition(rand()%700, 0 );
-//                            new_chicken->speed(game);
-//                        }
-//                        if(i>1){
-//                            new_chicken->setPosition(rand()%700, shapes[i-1]->getPosition().y-60);
-//                            new_chicken->speed(game);
-//                        }
-//                        shapes.emplace_back(std::move(new_chicken));
-//                    }
+                    //                    for(int i=0; i<100;i++){
+                    //                        auto new_chicken=std::make_unique<Chicken>();
+                    //                        if(i==0){
+                    //                            new_chicken->setPosition(rand()%700, 0 );
+                    //                            new_chicken->speed(game);
+                    //                        }
+                    //                        if(i>1){
+                    //                            new_chicken->setPosition(rand()%700, shapes[i-1]->getPosition().y-60);
+                    //                            new_chicken->speed(game);
+                    //                        }
+                    //                        shapes.emplace_back(std::move(new_chicken));
+                    //                    }
                     sf::Text points;
                     sf::Font font;
                     font.loadFromFile("Comic Sans MS 400.ttf");
@@ -334,24 +339,24 @@ int main() {
                         itoa(hero1.get_points(), string, 10 );
                         points.setString(string);
                         if(game.is_freeze()==false){
-                        if(chicken_seconds>chicken_frequency){
-                            auto zycie=std::make_unique<Chicken>();
-                            zycie->setPosition(rand()%window.getSize().x,-50);
-                            zycie->speed(game);
-                          shapes.emplace_back(std::move(zycie));
-                            chicken_seconds=0;
+                            if(chicken_seconds>chicken_frequency){
+                                auto zycie=std::make_unique<Chicken>();
+                                zycie->setPosition(randomInt(50,window.getSize().x-50),-50);
+                                zycie->speed(game);
+                                shapes.emplace_back(std::move(zycie));
+                                chicken_seconds=0;
+                            }
                         }
-}
                         if(seconds>heart_frequency){
                             auto zycie=std::make_unique<Heart>();
-                            zycie->setPosition(rand()%window.getSize().x,-50);
+                            zycie->setPosition(randomInt(50,window.getSize().x-50),-50);
                             bonusy.emplace_back(std::move(zycie));
                             seconds=0;
                         }
 
                         if(black_seconds>black_heart_frequency){
                             auto zycie=std::make_unique<Black_heart>();
-                            zycie->setPosition(rand()%window.getSize().x,-50);
+                            zycie->setPosition(randomInt(50,window.getSize().x-50),-50);
                             zycie->setBounds(0, window.getSize().x, 0, window.getSize().y);
                             bonusy.emplace_back(std::move(zycie));
                             black_seconds=0;
@@ -359,7 +364,7 @@ int main() {
 
                         if(seconds_freeze>ice_frequency){
                             auto zycie=std::make_unique<Freeze>();
-                            zycie->setPosition(rand()%window.getSize().x,-50);
+                            zycie->setPosition(randomInt(50,window.getSize().x-50),-50);
                             bonusy.emplace_back(std::move(zycie));
                             seconds_freeze=0;
                         }
@@ -443,15 +448,33 @@ int main() {
                                 break;
                             }
                         }
+                        for(auto it=bonusy.begin(); it!=bonusy.end();++it){
+                            if(it->get()->getGlobalBounds().top+it->get()->getGlobalBounds().height>=window.getSize().y){
+
+                                bonusy.erase(it);
+
+                                break;
+                            }
+                        }
                         if(hero1.get_hearts()==0){
                             sf::RenderWindow komunikat(sf::VideoMode(800, 600),"PRZEGRALES");
                             sf::Text message;
                             sf::Font font;
                             font.loadFromFile("Comic Sans MS 400.ttf");
                             message.setFont(font);
-                            message.setString("PRZEGRALES");
+                            message.setString("PRZEGRALES \nTwoj Wynik: ");
                             message.setCharacterSize(30);
+
                             message.setColor(sf::Color::Red);
+                            sf::Text wynik;
+
+
+                            wynik.setFont(font);
+                            wynik.setString(string);
+                            wynik.setCharacterSize(30);
+                            wynik.setPosition(0,85);
+
+                            wynik.setColor(sf::Color::Cyan);
                             while (komunikat.isOpen()) {
                                 sf::Event event;
                                 while (komunikat.pollEvent(event)) {
@@ -463,6 +486,7 @@ int main() {
                                 }
                                 komunikat.clear(sf::Color::Black);
                                 komunikat.draw(message);
+                                komunikat.draw(wynik);
                                 komunikat.display();
                             }
                         }

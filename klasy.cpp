@@ -23,13 +23,12 @@ Hero::Hero(sf::RenderWindow &window, std::string file):AnimatedSprite(file)
 {
     if(file=="cyan.png"){
         this->setScale(0.04, 0.04);
-
     }
     else if(file=="pikachu.png"){
         setScale(0.05, 0.05);
     }
     else{
-    this->setScale(0.1, 0.1);
+        this->setScale(0.1, 0.1);
     }
     this->setBounds(0, window.getSize().x, 0, window.getSize().y);
     this->setPosition((window.getSize().x/2.0)-((this->getGlobalBounds().width)/2.0),(window.getSize().y-this->getGlobalBounds().height));
@@ -37,14 +36,12 @@ Hero::Hero(sf::RenderWindow &window, std::string file):AnimatedSprite(file)
         auto heart=std::make_unique<Heart>();
         zycie.emplace_back(std::move(heart));
         if(i==0){
-           zycie[i]->setPosition(0,0);
+            zycie[i]->setPosition(0,0);
         }
         if(i>0){
-           zycie[i]->setPosition(zycie[i-1]->getPosition().x+zycie[i]->getGlobalBounds().width,0);
+            zycie[i]->setPosition(zycie[i-1]->getPosition().x+zycie[i]->getGlobalBounds().width,0);
         }
     }
-
-
 }
 void Hero::usun_zycie(){
     zycie.erase(zycie.end());
@@ -55,7 +52,7 @@ void Hero::usun_zycie(){
 void Hero::dodaj_zycie()
 {
     auto heart=std::make_unique<Heart>();
-heart->setPosition(zycie[zycie.size()-1]->getPosition().x+heart->getGlobalBounds().width,0);
+    heart->setPosition(zycie[zycie.size()-1]->getPosition().x+heart->getGlobalBounds().width,0);
     zycie.emplace_back(std::move(heart));
     hearts_++;
 
@@ -63,8 +60,8 @@ heart->setPosition(zycie[zycie.size()-1]->getPosition().x+heart->getGlobalBounds
 
 void Hero::jump()
 {
-   move(0,10);
-   move(0,-10);
+    move(0,10);
+    move(0,-10);
 }
 void Hero::draw_hero(sf::RenderWindow &window){
     window.draw(*this);
@@ -136,7 +133,6 @@ void Menu::draw(sf::RenderWindow &window){
     {
         window.draw(text[i]);
     }
-
 }
 
 void Menu::MoveUp(){
@@ -181,7 +177,6 @@ Settings::Settings(sf::RenderWindow &window){
     text[2].setString("POZIOM TRUDNOSCI");
     text[2].setPosition(width/1.9, (height/4)*3);
     selecteditemid=0;
-
 }
 
 void Settings::draw(sf::RenderWindow &window){
@@ -189,7 +184,6 @@ void Settings::draw(sf::RenderWindow &window){
     {
         window.draw(text[i]);
     }
-
 }
 
 void Settings::MoveUp(){
@@ -214,10 +208,6 @@ int Settings::GetPressedId(){
     return selecteditemid;
 }
 
-
-
-
-
 std::string Game::get_poziom_trudnosci()
 {
     return poziom_trudnosci;
@@ -229,7 +219,7 @@ std::string Game::get_background_name(){return background_name_;}
 
 void Game::set_poziom_trudnoci(std::string arg)
 {
-   poziom_trudnosci=arg;
+    poziom_trudnosci=arg;
 }
 
 void Game::set_background_name(std::string arg)
@@ -327,14 +317,10 @@ void Chicken::freeze()
     this->speed_y_=0;
 }
 
-Bonus::Bonus(std::string file):AnimatedSprite(file)
-{
-
-}
+Bonus::Bonus(std::string file):AnimatedSprite(file){}
 
 Heart::Heart():Bonus("heart.png"){
     this->setScale(0.05,0.05);
-
 }
 
 void Heart::move(const sf::Time &elapsed)
@@ -344,16 +330,12 @@ void Heart::move(const sf::Time &elapsed)
     this->sf::Sprite::move(0,distance_y);
 }
 
-
-
 Black_heart::Black_heart():Bonus("black_heart.png")
 {
-this->setScale(0.1,0.1);
-
-      static std::default_random_engine e{static_cast<long unsigned int>(time(0))};
-      std::uniform_int_distribution<int> d{-30, 30};
-      velocity_x_= d(e);
-
+    this->setScale(0.1,0.1);
+    static std::default_random_engine e{static_cast<long unsigned int>(time(0))};
+    std::uniform_int_distribution<int> d{-30, 30};
+    velocity_x_= d(e);
 }
 
 void Black_heart::move(const sf::Time &elapsed)
@@ -362,9 +344,7 @@ void Black_heart::move(const sf::Time &elapsed)
     float time=elapsed.asSeconds();
     float distance_y=time*velocity_y_;
     float distance_x=time*velocity_x_;
-
     this->sf::Sprite::move(distance_x,distance_y);
-
 }
 
 void Black_heart::setBounds(float left, float right, float top, float bottom)
@@ -426,7 +406,6 @@ void Movable::draw(sf::RenderWindow &window){
     {
         window.draw(text[i]);
     }
-
 }
 
 void Movable::MoveRight(){
@@ -442,7 +421,7 @@ void Movable::MoveLeft(){
     {
         text[selecteditemid].setColor(sf::Color::White);
         selecteditemid--;
-       text[selecteditemid].setColor(sf::Color::Cyan);
+        text[selecteditemid].setColor(sf::Color::Cyan);
     }
 }
 
@@ -450,9 +429,4 @@ int Movable::GetPressedId(){
     return selecteditemid;
 }
 
-int randomInt(int min, int max) {
-  static std::default_random_engine e{static_cast<long unsigned int>(time(0))};
-  std::uniform_int_distribution<int> d{min, max};
-  return d(e);
-}
 
